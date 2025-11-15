@@ -14,7 +14,18 @@ const io = new Server(server, {
 
 
 io.on('connection', (socket) => {
- 
+  console.log("new client is online #id", socket.id);
+  const rooms = io.sockets.adapter.rooms;
+console.log(rooms);
+  socket.on("joinRoom", (roomNumber)=> {
+    console.log("joined" , roomNumber);
+
+    socket.join("1")
+  })
+
+  socket.on("send-message", (message, roomNumber)=> {
+    io.emit("receive-message",message)
+  })
 
 });
 
