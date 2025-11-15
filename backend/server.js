@@ -12,16 +12,10 @@ const io = new Server(server, {
 
 
 
+
 io.on('connection', (socket) => {
-  console.log('a user connected');
-  
-  socket.on("message", (data)=> {
-    console.log("message",data);
-    
-  })
-  socket.on("list", (data)=>{
-    io.emit("receieve_message", data)
-  })
+ 
+
 });
 
 server.listen(3000, () => {

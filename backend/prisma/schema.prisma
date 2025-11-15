@@ -1,0 +1,75 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           BigInt   @id @default(autoincrement())
+  username     String   @unique
+  email        String?  @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+
+  // Relations
+  messages      Message[]
+  rooms         RoomMember[]
+  messageStatus MessageStatus[]
+}
+
+model Room {
+  id            BigInt    @id @default(autoincrement())
+  name          String?
+  isPrivate     Boolean   @default(false)
+  lastMessageAt DateTime?
+  createdAt     DateTime  @default(now())
+
+  // Relations
+  messages Message[]
+  members  RoomMember[]
+}
+
+model RoomMember {
+  roomId   BigInt
+  userId   BigInt
+  joinedAt DateTime @default(now())
+
+  // Relations
+  room Room @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([roomId, userId])
+}
+
+model Message {
+  id        BigInt   @id @default(autoincrement())
+  roomId    BigInt
+  senderId  BigInt
+  content   String
+  createdAt DateTime @default(now())
+
+  // Relations
+  room   Room            @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  sender User            @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  status MessageStatus[]
+
+  @@index([roomId])
+  @@index([senderId])
+}
+
+model MessageStatus {
+  messageId BigInt
+  userId    BigInt
+  isSeen    Boolean   @default(false)
+  seenAt    DateTime?
+
+  // Relations
+  message Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([messageId, userId])
+}
