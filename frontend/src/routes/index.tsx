@@ -6,5 +6,5 @@ export const Route = createFileRoute("/")({
 });
 
 function App() {
-  return <div>sdf</div>;
+  return <div className="flex-1 h-screen w-full bg-[#0F1020]">hi</div>;
 }
